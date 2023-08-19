@@ -1,0 +1,194 @@
+
+# slog: Parquet handler
+
+[![tag](https://img.shields.io/github/tag/samber/slog-parquet.svg)](https://github.com/samber/slog-parquet/releases)
+![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.21-%23007d9c)
+[![GoDoc](https://godoc.org/github.com/samber/slog-parquet?status.svg)](https://pkg.go.dev/github.com/samber/slog-parquet)
+![Build Status](https://github.com/samber/slog-parquet/actions/workflows/test.yml/badge.svg)
+[![Go report](https://goreportcard.com/badge/github.com/samber/slog-parquet)](https://goreportcard.com/report/github.com/samber/slog-parquet)
+[![Coverage](https://img.shields.io/codecov/c/github/samber/slog-parquet)](https://codecov.io/gh/samber/slog-parquet)
+[![Contributors](https://img.shields.io/github/contributors/samber/slog-parquet)](https://github.com/samber/slog-parquet/graphs/contributors)
+[![License](https://img.shields.io/github/license/samber/slog-parquet)](./LICENSE)
+
+A [parquet](https://www.elastic.co/parquet/) Handler for [slog](https://pkg.go.dev/log/slog) Go library.
+
+**See also:**
+
+- [slog-multi](https://github.com/samber/slog-multi): `slog.Handler` chaining, fanout, routing, failover, load balancing...
+- [slog-formatter](https://github.com/samber/slog-formatter): `slog` attribute formatting
+- [slog-sampling](https://github.com/samber/slog-sampling): `slog` sampling policy
+- [slog-gin](https://github.com/samber/slog-gin): Gin middleware for `slog` logger
+- [slog-echo](https://github.com/samber/slog-echo): Echo middleware for `slog` logger
+- [slog-fiber](https://github.com/samber/slog-fiber): Fiber middleware for `slog` logger
+- [slog-datadog](https://github.com/samber/slog-datadog): A `slog` handler for `Datadog`
+- [slog-rollbar](https://github.com/samber/slog-rollbar): A `slog` handler for `Rollbar`
+- [slog-sentry](https://github.com/samber/slog-sentry): A `slog` handler for `Sentry`
+- [slog-syslog](https://github.com/samber/slog-syslog): A `slog` handler for `Syslog`
+- [slog-logstash](https://github.com/samber/slog-logstash): A `slog` handler for `Logstash`
+- [slog-fluentd](https://github.com/samber/slog-fluentd): A `slog` handler for `Fluentd`
+- [slog-graylog](https://github.com/samber/slog-graylog): A `slog` handler for `Graylog`
+- [slog-loki](https://github.com/samber/slog-loki): A `slog` handler for `Loki`
+- [slog-slack](https://github.com/samber/slog-slack): A `slog` handler for `Slack`
+- [slog-telegram](https://github.com/samber/slog-telegram): A `slog` handler for `Telegram`
+- [slog-mattermost](https://github.com/samber/slog-mattermost): A `slog` handler for `Mattermost`
+- [slog-microsoft-teams](https://github.com/samber/slog-microsoft-teams): A `slog` handler for `Microsoft Teams`
+- [slog-webhook](https://github.com/samber/slog-webhook): A `slog` handler for `Webhook`
+- [slog-kafka](https://github.com/samber/slog-kafka): A `slog` handler for `Kafka`
+- [slog-parquet](https://github.com/samber/slog-parquet): A `slog` handler for `Parquet` + `AWS S3`
+
+## 🚀 Install
+
+```sh
+go get github.com/samber/slog-parquet
+```
+
+**Compatibility**: go >= 1.21
+
+No breaking changes will be made to exported APIs before v2.0.0.
+
+## 💡 Usage
+
+GoDoc: [https://pkg.go.dev/github.com/samber/slog-parquet](https://pkg.go.dev/github.com/samber/slog-parquet)
+
+### Handler options
+
+```go
+type Option struct {
+    // log level (default: debug)
+	Level slog.Leveler
+
+	// parquet rows buffer
+	Buffer parquet.ParquetBuffer
+
+	// optional: customize json payload builder
+	Converter Converter
+}
+```
+
+### Parquet buffer
+
+```go
+func NewParquetBuffer(bucket objstore.Bucket, prefix string, rows int) parquet.ParquetBuffer
+```
+
+Attributes will be injected in log payload.
+
+### Object storage
+
+See [github.com/thanos-io/objstore](github.com/thanos-io/objstore).
+
+### Example
+
+```go
+import (
+	"log/slog"
+
+	slogparquet "github.com/samber/slog-parquet"
+	"github.com/thanos-io/objstore/providers/s3"
+)
+
+func main() {
+	bucket, _ := s3.NewBucketWithConfig(
+		slogparquet.NewLogger(),
+		s3.Config{
+			Endpoint:  os.Getenv("AWS_S3_ENDPOINT"),
+			Region:    os.Getenv("AWS_S3_REGION"),
+			Bucket:    os.Getenv("AWS_S3_BUCKET"),
+			AccessKey: os.Getenv("AWS_ACCESS_KEY"),
+			SecretKey: os.Getenv("AWS_SECRET_KEY"),
+			PartSize:  16 * 1024 * 1024, // 16MB
+		},
+		"logger",
+	)
+
+	buffer := slogparquet.NewParquetBuffer(bucket, "api/logs", 10*1024*1024)
+
+    logger := slog.New(slogparquet.Option{Level: slog.LevelDebug, Buffer: buffer}.NewParquetHandler())
+    logger = logger.
+        With("environment", "dev").
+        With("release", "v1.0.0")
+
+    // log error
+    logger.
+        With("category", "sql").
+        With("query.statement", "SELECT COUNT(*) FROM users;").
+        With("query.duration", 1*time.Second).
+        With("error", fmt.Errorf("could not count users")).
+        Error("caramba!")
+
+    // log user signup
+    logger.
+        With(
+            slog.Group("user",
+                slog.String("id", "user-123"),
+                slog.Time("created_at", time.Now()),
+            ),
+        ).
+        Info("user registration")
+
+	buffer.Flush(true)
+	bucket.Close()
+}
+```
+
+Output:
+
+```bash
+$ parquet meta ~/Downloads/00_17_08.d4d9f.parquet
+
+File path:  /Users/samber/Downloads/00_17_08.d4d9f.parquet
+Created by: github.com/samber/slog-parquet version (devel)(build )
+Properties: (none)
+Schema:
+message log {
+  required int64 time (TIMESTAMP(NANOS,true));
+  required binary log_level (STRING);
+  required binary message (STRING);
+  required binary attributes;
+  required binary source (STRING);
+}
+
+
+Row group 0:  count: 2  279.00 B records  start: 51  total(compressed): 558 B total(uncompressed):644 B 
+--------------------------------------------------------------------------------
+            type      encodings count     avg size   nulls   min / max
+time        INT64     F   _     2         22.50 B            "2023-08-19T00:17:08.14408..." / "2023-08-19T00:17:08.14420..."
+log_level   BINARY    F         2         26.50 B            "ERROR" / "INFO"
+message     BINARY    F         2         35.00 B            "caramba!" / "user registration"
+attributes  BINARY    F         2         155.50 B           "0x7B2263617465676F7279223..." / "0x7B22656E7669726F6E6D656..."
+source      BINARY    F         2         39.50 B            "samber/slog-parquet" / "samber/slog-parquet"
+```
+
+## 🤝 Contributing
+
+- Ping me on twitter [@samuelberthe](https://twitter.com/samuelberthe) (DMs, mentions, whatever :))
+- Fork the [project](https://github.com/samber/slog-parquet)
+- Fix [open issues](https://github.com/samber/slog-parquet/issues) or request new features
+
+Don't hesitate ;)
+
+```bash
+# Install some dev dependencies
+make tools
+
+# Run tests
+make test
+# or
+make watch-test
+```
+
+## 👤 Contributors
+
+![Contributors](https://contrib.rocks/image?repo=samber/slog-parquet)
+
+## 💫 Show your support
+
+Give a ⭐️ if this project helped you!
+
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/samber?style=for-the-badge)](https://github.com/sponsors/samber)
+
+## 📝 License
+
+Copyright © 2023 [Samuel Berthe](https://github.com/samber).
+
+This project is [MIT](./LICENSE) licensed.
