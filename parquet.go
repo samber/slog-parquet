@@ -26,7 +26,8 @@ type parquetBuffer struct {
 	prefix string
 	id     string
 
-	size         int
+	maxRecords   int
+	maxInterval  time.Duration
 	rowGroupSize int
 
 	mutex  sync.Mutex // ☢️
@@ -36,13 +37,14 @@ type parquetBuffer struct {
 	buffer *parquet.GenericBuffer[log]
 }
 
-func NewParquetBuffer(bucket objstore.Bucket, prefix string, size int) ParquetBuffer {
+func NewParquetBuffer(bucket objstore.Bucket, prefix string, maxRecords int, maxInterval time.Duration) ParquetBuffer {
 	return &parquetBuffer{
 		prefix: prefix,
 		id:     lo.Must(uuid.NewV4()).String()[0:5],
 
-		size:         size,
-		rowGroupSize: int(math.Ceil(float64(size) / 10)),
+		maxRecords:   maxRecords,
+		maxInterval:  maxInterval,
+		rowGroupSize: int(math.Ceil(float64(maxRecords) / 10)),
 
 		mutex:  sync.Mutex{},
 		bucket: bucket,
@@ -52,7 +54,7 @@ func NewParquetBuffer(bucket objstore.Bucket, prefix string, size int) ParquetBu
 	}
 }
 
-func (b *parquetBuffer) Append(time time.Time, logLevel slog.Level, message string, attributes map[string]any) error {
+func (b *parquetBuffer) Append(tIme time.Time, logLevel slog.Level, message string, attributes map[string]any) error {
 	serializedAttrs, err := json.Marshal(attributes)
 	if err != nil {
 		return err
@@ -62,7 +64,7 @@ func (b *parquetBuffer) Append(time time.Time, logLevel slog.Level, message stri
 
 	_, err = b.buffer.Write([]log{
 		{
-			Time:       time,
+			Time:       tIme,
 			LogLevel:   logLevel.String(),
 			Message:    message,
 			Attributes: serializedAttrs,
@@ -73,7 +75,7 @@ func (b *parquetBuffer) Append(time time.Time, logLevel slog.Level, message stri
 		return err
 	}
 
-	if b.buffer.Len() >= b.size {
+	if b.buffer.Len() >= b.maxRecords || b.start.Add(b.maxInterval).Before(time.Now()) {
 		b.mutex.Unlock()
 		return b.Flush(false)
 	}

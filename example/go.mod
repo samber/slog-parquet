@@ -7,6 +7,8 @@ require (
 	github.com/thanos-io/objstore v0.0.0-20230816175749-20395bffdf26
 )
 
+replace github.com/samber/slog-parquet => ../
+
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.16.0 // indirect

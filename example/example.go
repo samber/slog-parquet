@@ -13,6 +13,13 @@ import (
 )
 
 func main() {
+	// export AWS_ACCESS_KEY=helloworld
+	// export AWS_SECRET_KEY=helloworld
+	// export AWS_S3_REGION=fr-par
+	// export AWS_S3_ENDPOINT=localhost:9000
+	// export AWS_S3_BUCKET=slog-test
+	// go run *.go
+
 	bucket, err := s3.NewBucketWithConfig(
 		slogparquet.NewLogger(),
 		s3.Config{
@@ -29,7 +36,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	buffer := slogparquet.NewParquetBuffer(bucket, "logs", 10*1024*1024)
+	buffer := slogparquet.NewParquetBuffer(bucket, "logs", 10*1024*1024, 1*time.Second)
 
 	logger := slog.New(slogparquet.Option{Level: slog.LevelDebug, Buffer: buffer}.NewParquetHandler())
 	logger = logger.
@@ -54,26 +61,20 @@ func main() {
 		).
 		Info("user registration")
 
+	for i := 0; i < 10_000_000; i++ {
+		logger.
+			With(
+				slog.Group("user",
+					slog.String("id", "user-123"),
+					slog.Time("created_at", time.Now().AddDate(0, 0, -1)),
+				),
+			).
+			With("a", i).
+			With("environment", "dev").
+			With("error", fmt.Errorf("an error")).
+			Error("A message")
+	}
+
 	buffer.Flush(true)
 	bucket.Close()
-
-	// logger := slog.New(slogparquet.Option{Level: slog.LevelDebug, Buffer: buffer}.NewParquetHandler())
-	// logger = logger.With("release", "v1.0.0")
-
-	// for i := 0; i < 10_000_000; i++ {
-	// 	logger.
-	// 		With(
-	// 			slog.Group("user",
-	// 				slog.String("id", "user-123"),
-	// 				slog.Time("created_at", time.Now().AddDate(0, 0, -1)),
-	// 			),
-	// 		).
-	// 		With("a", i).
-	// 		With("environment", "dev").
-	// 		With("error", fmt.Errorf("an error")).
-	// 		Error("A message")
-	// }
-
-	// buffer.Flush(true)
-	// bucket.Close()
 }

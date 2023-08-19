@@ -58,7 +58,7 @@ type Option struct {
 	Level slog.Leveler
 
 	// parquet rows buffer
-	Buffer parquet.ParquetBuffer
+	Buffer slogparquet.ParquetBuffer
 
 	// optional: customize json payload builder
 	Converter Converter
@@ -68,7 +68,7 @@ type Option struct {
 ### Parquet buffer
 
 ```go
-func NewParquetBuffer(bucket objstore.Bucket, prefix string, rows int) parquet.ParquetBuffer
+func NewParquetBuffer(bucket objstore.Bucket, prefix string, maxRecords int, maxInterval time.Duration) slogparquet.ParquetBuffer
 ```
 
 Attributes will be injected in log payload.
@@ -88,20 +88,20 @@ import (
 )
 
 func main() {
-	bucket, _ := s3.NewBucketWithConfig(
-		slogparquet.NewLogger(),
-		s3.Config{
-			Endpoint:  os.Getenv("AWS_S3_ENDPOINT"),
-			Region:    os.Getenv("AWS_S3_REGION"),
-			Bucket:    os.Getenv("AWS_S3_BUCKET"),
-			AccessKey: os.Getenv("AWS_ACCESS_KEY"),
-			SecretKey: os.Getenv("AWS_SECRET_KEY"),
-			PartSize:  16 * 1024 * 1024, // 16MB
-		},
-		"logger",
-	)
+    bucket, _ := s3.NewBucketWithConfig(
+        slogparquet.NewLogger(),
+        s3.Config{
+            Endpoint:  os.Getenv("AWS_S3_ENDPOINT"),
+            Region:    os.Getenv("AWS_S3_REGION"),
+            Bucket:    os.Getenv("AWS_S3_BUCKET"),
+            AccessKey: os.Getenv("AWS_ACCESS_KEY"),
+            SecretKey: os.Getenv("AWS_SECRET_KEY"),
+            PartSize:  16 * 1024 * 1024, // 16MB
+        },
+        "logger",
+    )
 
-	buffer := slogparquet.NewParquetBuffer(bucket, "api/logs", 10*1024*1024)
+    buffer := slogparquet.NewParquetBuffer(bucket, "api/logs", 10*1024*1024)
 
     logger := slog.New(slogparquet.Option{Level: slog.LevelDebug, Buffer: buffer}.NewParquetHandler())
     logger = logger.
@@ -126,8 +126,8 @@ func main() {
         ).
         Info("user registration")
 
-	buffer.Flush(true)
-	bucket.Close()
+    buffer.Flush(true)
+    bucket.Close()
 }
 ```
 
