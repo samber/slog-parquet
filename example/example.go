@@ -24,6 +24,7 @@ func main() {
 		slogparquet.NewLogger(),
 		s3.Config{
 			Endpoint:  os.Getenv("AWS_S3_ENDPOINT"),
+			Insecure:  true,
 			Region:    os.Getenv("AWS_S3_REGION"),
 			AccessKey: os.Getenv("AWS_ACCESS_KEY"),
 			SecretKey: os.Getenv("AWS_SECRET_KEY"),
@@ -36,7 +37,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	buffer := slogparquet.NewParquetBuffer(bucket, "logs", 10*1024*1024, 1*time.Second)
+	buffer := slogparquet.NewParquetBuffer(bucket, "logs", 10*1024*1024, 5*time.Second)
 
 	logger := slog.New(slogparquet.Option{Level: slog.LevelDebug, Buffer: buffer}.NewParquetHandler())
 	logger = logger.
