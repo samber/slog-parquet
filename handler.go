@@ -33,6 +33,8 @@ func (o Option) NewParquetHandler() slog.Handler {
 	}
 }
 
+var _ slog.Handler = (*ParquetHandler)(nil)
+
 type ParquetHandler struct {
 	option Option
 	attrs  []slog.Attr
