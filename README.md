@@ -58,17 +58,17 @@ GoDoc: [https://pkg.go.dev/github.com/samber/slog-parquet](https://pkg.go.dev/gi
 ```go
 type Option struct {
     // log level (default: debug)
-	Level slog.Leveler
+    Level slog.Leveler
 
-	// parquet rows buffer
-	Buffer slogparquet.ParquetBuffer
+    // parquet rows buffer
+    Buffer slogparquet.ParquetBuffer
 
-	// optional: customize json payload builder
-	Converter Converter
+    // optional: customize json payload builder
+    Converter Converter
 
-	// optional: see slog.HandlerOptions
-	AddSource   bool
-	ReplaceAttr func(groups []string, a slog.Attr) slog.Attr
+    // optional: see slog.HandlerOptions
+    AddSource   bool
+    ReplaceAttr func(groups []string, a slog.Attr) slog.Attr
 }
 ```
 
@@ -95,10 +95,10 @@ See [github.com/thanos-io/objstore](github.com/thanos-io/objstore).
 
 ```go
 import (
-	"log/slog"
+    "log/slog"
 
-	slogparquet "github.com/samber/slog-parquet"
-	"github.com/thanos-io/objstore/providers/s3"
+    slogparquet "github.com/samber/slog-parquet"
+    "github.com/thanos-io/objstore/providers/s3"
 )
 
 func main() {
