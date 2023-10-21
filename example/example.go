@@ -8,7 +8,7 @@ import (
 
 	"log/slog"
 
-	slogparquet "github.com/samber/slog-parquet"
+	slogparquet "github.com/samber/slog-parquet/v2"
 	"github.com/thanos-io/objstore/providers/s3"
 )
 

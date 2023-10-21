@@ -43,16 +43,16 @@ A [parquet](https://www.elastic.co/parquet/) Handler for [slog](https://pkg.go.d
 ## 🚀 Install
 
 ```sh
-go get github.com/samber/slog-parquet
+go get github.com/samber/slog-parquet/v2
 ```
 
 **Compatibility**: go >= 1.21
 
-No breaking changes will be made to exported APIs before v2.0.0.
+No breaking changes will be made to exported APIs before v3.0.0.
 
 ## 💡 Usage
 
-GoDoc: [https://pkg.go.dev/github.com/samber/slog-parquet](https://pkg.go.dev/github.com/samber/slog-parquet)
+GoDoc: [https://pkg.go.dev/github.com/samber/slog-parquet/v2](https://pkg.go.dev/github.com/samber/slog-parquet/v2)
 
 ### Handler options
 
@@ -98,7 +98,7 @@ See [github.com/thanos-io/objstore](github.com/thanos-io/objstore).
 import (
     "log/slog"
 
-    slogparquet "github.com/samber/slog-parquet"
+    slogparquet "github.com/samber/slog-parquet/v2"
     "github.com/thanos-io/objstore/providers/s3"
 )
 

@@ -1,9 +1,9 @@
-module github.com/samber/slog-parquet/example
+module github.com/samber/slog-parquet/v2/example
 
 go 1.21
 
 require (
-	github.com/samber/slog-parquet v0.0.0-20230819003546-f6e0e0bb6a8a
+	github.com/samber/slog-parquet/v2 v2.0.0
 	github.com/thanos-io/objstore v0.0.0-20230816175749-20395bffdf26
 )
 

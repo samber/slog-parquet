@@ -1,4 +1,4 @@
-module github.com/samber/slog-parquet
+module github.com/samber/slog-parquet/v2
 
 go 1.21
 
