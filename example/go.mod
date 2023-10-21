@@ -3,7 +3,7 @@ module github.com/samber/slog-parquet/v2/example
 go 1.21
 
 require (
-	github.com/samber/slog-parquet/v2 v2.0.0
+	github.com/samber/slog-parquet/v2 v2.0.1
 	github.com/thanos-io/objstore v0.0.0-20230816175749-20395bffdf26
 )
 
@@ -52,6 +52,7 @@ require (
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rs/xid v1.5.0 // indirect
 	github.com/samber/lo v1.38.1 // indirect
+	github.com/samber/slog-common v0.11.0 // indirect
 	github.com/segmentio/encoding v0.3.6 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
