@@ -8,7 +8,6 @@ require (
 	github.com/samber/lo v1.38.1
 	github.com/samber/slog-common v0.14.0
 	github.com/thanos-io/objstore v0.0.0-20230816175749-20395bffdf26
-	go.uber.org/goleak v1.2.1
 )
 
 require (
