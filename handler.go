@@ -32,6 +32,10 @@ func (o Option) NewParquetHandler() slog.Handler {
 		panic("missing buffer configuration")
 	}
 
+	if o.Converter == nil {
+		o.Converter = DefaultConverter
+	}
+
 	return &ParquetHandler{
 		option: o,
 		attrs:  []slog.Attr{},
@@ -52,12 +56,7 @@ func (h *ParquetHandler) Enabled(_ context.Context, level slog.Level) bool {
 }
 
 func (h *ParquetHandler) Handle(ctx context.Context, record slog.Record) error {
-	converter := DefaultConverter
-	if h.option.Converter != nil {
-		converter = h.option.Converter
-	}
-
-	attrs := converter(h.option.AddSource, h.option.ReplaceAttr, h.attrs, h.groups, &record)
+	attrs := h.option.Converter(h.option.AddSource, h.option.ReplaceAttr, h.attrs, h.groups, &record)
 
 	return h.option.Buffer.Append(
 		record.Time,
