@@ -79,6 +79,8 @@ type Option struct {
 
     // optional: customize json payload builder
     Converter Converter
+    // optional: fetch attributes from context
+    AttrFromContext []func(ctx context.Context) []slog.Attr
 
     // optional: see slog.HandlerOptions
     AddSource   bool
@@ -185,6 +187,41 @@ log_level   BINARY    F         2         26.50 B            "ERROR" / "INFO"
 message     BINARY    F         2         35.00 B            "caramba!" / "user registration"
 attributes  BINARY    F         2         155.50 B           "0x7B2263617465676F7279223..." / "0x7B22656E7669726F6E6D656..."
 source      BINARY    F         2         39.50 B            "samber/slog-parquet" / "samber/slog-parquet"
+```
+
+### Tracing
+
+Import the samber/slog-otel library.
+
+```go
+import (
+	slogparquet "github.com/samber/slog-parquet"
+	slogotel "github.com/samber/slog-otel"
+	"go.opentelemetry.io/otel/sdk/trace"
+)
+
+func main() {
+	tp := trace.NewTracerProvider(
+		trace.WithSampler(trace.AlwaysSample()),
+	)
+	tracer := tp.Tracer("hello/world")
+
+	ctx, span := tracer.Start(context.Background(), "foo")
+	defer span.End()
+
+	span.AddEvent("bar")
+
+	logger := slog.New(
+		slogparquet.Option{
+			// ...
+			AttrFromContext: []func(ctx context.Context) []slog.Attr{
+				slogotel.ExtractOtelAttrFromContext([]string{"tracing"}, "trace_id", "span_id"),
+			},
+		}.NewParquetHandler(),
+	)
+
+	logger.ErrorContext(ctx, "a message")
+}
 ```
 
 ## 🤝 Contributing
