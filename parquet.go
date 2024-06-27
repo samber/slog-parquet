@@ -55,6 +55,7 @@ func NewParquetBuffer(bucket objstore.Bucket, prefix string, maxRecords int, max
 }
 
 func (b *parquetBuffer) Append(tIme time.Time, logLevel slog.Level, message string, attributes map[string]any) error {
+	// bearer:disable go_lang_deserialization_of_user_input
 	serializedAttrs, err := json.Marshal(attributes)
 	if err != nil {
 		return err
