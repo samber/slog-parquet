@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/parquet-go/parquet-go v0.23.0
-	github.com/samber/lo v1.47.0
+	github.com/samber/lo v1.49.0
 	github.com/samber/slog-common v0.18.1
 	github.com/thanos-io/objstore v0.0.0-20230816175749-20395bffdf26
 	go.uber.org/goleak v1.3.0
@@ -33,9 +33,8 @@ require (
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/segmentio/encoding v0.4.0 // indirect
-	github.com/stretchr/testify v1.10.0 // indirect
-	golang.org/x/sync v0.7.0 // indirect
+	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )
