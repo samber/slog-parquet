@@ -1,10 +1,11 @@
 module github.com/samber/slog-parquet/v2
 
 go 1.21
+toolchain go1.22.5
 
 require (
 	github.com/gofrs/uuid v4.4.0+incompatible
-	github.com/parquet-go/parquet-go v0.23.0
+	github.com/parquet-go/parquet-go v0.25.0
 	github.com/samber/lo v1.49.1
 	github.com/samber/slog-common v0.18.1
 	github.com/thanos-io/objstore v0.0.0-20230816175749-20395bffdf26
@@ -32,7 +33,6 @@ require (
 	github.com/prometheus/common v0.36.0 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	github.com/segmentio/encoding v0.4.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
