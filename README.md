@@ -2,7 +2,7 @@
 # slog: Parquet handler
 
 [![tag](https://img.shields.io/github/tag/samber/slog-parquet.svg)](https://github.com/samber/slog-parquet/releases)
-![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.21-%23007d9c)
+![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.22-%23007d9c)
 [![GoDoc](https://godoc.org/github.com/samber/slog-parquet?status.svg)](https://pkg.go.dev/github.com/samber/slog-parquet)
 ![Build Status](https://github.com/samber/slog-parquet/actions/workflows/test.yml/badge.svg)
 [![Go report](https://goreportcard.com/badge/github.com/samber/slog-parquet)](https://goreportcard.com/report/github.com/samber/slog-parquet)
