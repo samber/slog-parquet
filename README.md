@@ -122,7 +122,7 @@ Attributes will be injected in log payload.
 
 ### Object storage
 
-See [github.com/thanos-io/objstore](github.com/thanos-io/objstore).
+See [github.com/thanos-io/objstore](https://github.com/thanos-io/objstore).
 
 ### Example
 
