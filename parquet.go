@@ -90,7 +90,9 @@ func (b *parquetBuffer) Flush(sync bool) error {
 		return b.flush()
 	}
 
-	go b.flush()
+	go func() {
+		_ = b.flush()
+	}()
 	return nil
 }
 
