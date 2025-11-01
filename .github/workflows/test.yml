@@ -11,9 +11,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         go:
-          - '1.21'
           - '1.22'
           - '1.23'
           - '1.24'
@@ -43,4 +43,4 @@ jobs:
         file: ./cover.out
         flags: unittests
         verbose: true
-      if: matrix.go == '1.21'
+      if: matrix.go == '1.22'
