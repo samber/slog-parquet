@@ -5,8 +5,8 @@ go 1.22
 require (
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/parquet-go/parquet-go v0.25.1
-	github.com/samber/lo v1.52.0
-	github.com/samber/slog-common v0.20.0
+	github.com/samber/lo v1.53.0
+	github.com/samber/slog-common v0.21.0
 	github.com/thanos-io/objstore v0.0.0-20230816175749-20395bffdf26
 	go.uber.org/goleak v1.3.0
 )
